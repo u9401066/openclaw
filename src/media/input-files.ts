@@ -102,6 +102,12 @@ export const DEFAULT_INPUT_FILE_MIMES = [
   "text/csv",
   "application/json",
   "application/pdf",
+  // Office formats
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.ms-powerpoint",
 ];
 export const DEFAULT_INPUT_IMAGE_MAX_BYTES = 10 * 1024 * 1024;
 export const DEFAULT_INPUT_FILE_MAX_BYTES = 5 * 1024 * 1024;
@@ -388,6 +394,17 @@ export async function extractFileContentFromSource(params: {
       text,
       images: extracted.images.length > 0 ? extracted.images : undefined,
     };
+  }
+
+  // Office documents (XLSX, XLS, DOCX, PPTX)
+  const { OFFICE_MIME_TYPES, extractOfficeContent } = await import("./office-extract.js");
+  if (OFFICE_MIME_TYPES.has(mimeType)) {
+    const extracted = await extractOfficeContent({
+      buffer,
+      mimeType,
+      maxChars: limits.maxChars,
+    });
+    return { filename, text: extracted.text };
   }
 
   const text = clampText(decodeTextContent(buffer, charset), limits.maxChars);

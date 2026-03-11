@@ -68,6 +68,15 @@ const TEXT_EXT_MIME = new Map<string, string>([
   [".xml", "application/xml"],
 ]);
 
+// Office MIME types that should bypass the binary vnd.* filter for text extraction
+const OFFICE_EXTRACTABLE_MIMES = new Set([
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.ms-powerpoint",
+]);
+
 const XML_ESCAPE_MAP: Record<string, string> = {
   "<": "&lt;",
   ">": "&gt;",
@@ -325,6 +334,10 @@ function isBinaryMediaMime(mime?: string): boolean {
     // Keep vendor +json/+xml payloads eligible for text extraction while
     // treating the common binary vendor family (Office, archives, etc.) as binary.
     if (mime.endsWith("+json") || mime.endsWith("+xml")) {
+      return false;
+    }
+    // Allow Office documents through for text extraction (like PDF)
+    if (OFFICE_EXTRACTABLE_MIMES.has(mime)) {
       return false;
     }
     return true;
