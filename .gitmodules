@@ -1,0 +1,6 @@
+[submodule "extensions/mcp-adapter"]
+	path = extensions/mcp-adapter
+	url = https://github.com/androidStern-personal/openclaw-mcp-adapter.git
+[submodule "extensions/pubmed-search-mcp"]
+	path = extensions/pubmed-search-mcp
+	url = https://github.com/u9401066/pubmed-search-mcp.git
